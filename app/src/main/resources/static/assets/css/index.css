@@ -1,53 +1,363 @@
-/* this is the style sheet file for index.htlm  */
+/* Landing page styles */
 
-/* 
-**Global Reset (`*`)**
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-* Remove all default margin and padding.
-* Use `border-box` for sizing to include padding and border in element size.
+html,
+body {
+    min-height: 100%;
+    font-family: "Roboto", Arial, sans-serif;
+}
 
-**Base (`html, body`)**
+body {
+    color: #1f2933;
+    background-color: #f7faf9;
+}
 
-* Set height to 100% for full viewport layout.
-* Use the `'Roboto'` sans-serif font for modern, clean typography.
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
 
-**Layout Wrapper (`.wrapper`)**
+.container {
+    min-height: 100vh;
+}
 
-* Use a vertical flexbox layout.
-* Ensure the wrapper covers at least the full height of the screen (`min-height: 100vh`).
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-**Heading (`h2`)**
+.main-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 560px;
+    padding: 40px 20px;
+    text-align: center;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)),
+        url("../images/defineRole/index.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+}
 
-* Set a large font size (`48px`) for prominence.
-* Add a bottom margin of `50px` for spacing.
-* Use a dark teal color (`#003e3e`).
-* Make the font bold and use a blended font stack (`'Alegreya', 'Roboto', sans-serif`) for elegant styling.
+.main-content h2 {
+    margin-bottom: 50px;
+    color: #003e3e;
+    font-family: "Alegreya", "Roboto", sans-serif;
+    font-size: clamp(2.25rem, 6vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+}
 
-**Main Section (`.main-content`)**
+.role-selection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+}
 
-* Allow the section to grow to fill space with `flex-grow: 1`.
-* Add `40px` of internal padding.
-* Center content both horizontally and vertically using `justify-content` and `align-items`.
-* Display items in a column direction.
-* Center all text.
-* Apply a full-screen background image with:
+button {
+    width: 200px;
+    margin-top: 10px;
+    padding: 12px 20px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    color: #ffffff;
+    background-color: #015c5d;
+    box-shadow: 0 4px 10px rgba(0, 62, 62, 0.18);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
 
-  * `cover` size
-  * `center` positioning
-  * no repeat
-  * `fixed` attachment to keep image still during scroll
+button:hover {
+    background-color: #a62b1f;
+    box-shadow: 0 6px 14px rgba(166, 43, 31, 0.25);
+    transform: translateY(-2px);
+}
 
-**Buttons (`button`)**
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+    outline: 3px solid #f3b61f;
+    outline-offset: 3px;
+}
 
-* Style with a teal green background (`#015c5d`) and white text.
-* Remove borders and round the corners (`12px`).
-* Use `10px 20px` padding and set width to `200px`.
-* Add a top margin of `10px` for spacing.
-* Enable pointer cursor and readable font size (`16px`).
-* On hover, change background color to bold red (`#A62B1F`).
+button:active {
+    transform: translateY(0);
+}
 
-**Dashboard Buttons (`.dashboard-btn`)**
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    padding: 10px 24px;
+    border-bottom: 2px solid #d8e1df;
+    color: #243333;
+    background-color: #ffffff;
+}
 
-* Use the same base green background (`#015c5d`) as the default button.
-* On hover, darken the background to deep teal (`#003e3e`) for visual feedback.
- */
+.logo-section,
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    width: auto;
+    height: 42px;
+    object-fit: contain;
+}
+
+.logo-title {
+    color: #003e3e;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.header nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.header nav a {
+    color: #243333;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.header nav a:hover {
+    color: #a62b1f;
+}
+
+.footer {
+    padding: 36px 24px;
+    border-top: 2px solid #d8e1df;
+    background-color: #f4f4f4;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 30px;
+}
+
+.footer-logo {
+    display: flex;
+    flex: 1 1 250px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.footer-logo img {
+    width: auto;
+    height: 50px;
+}
+
+.footer-logo p,
+.footer-column a,
+.footer-column h4 {
+    color: #0a0a23;
+}
+
+.footer-links {
+    display: flex;
+    flex: 2 1 500px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-column a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-column a:hover {
+    color: #015c5d;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    inset: 0;
+    overflow-y: auto;
+    padding: 60px 20px 30px;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+    position: relative;
+    width: min(100%, 420px);
+    margin: auto;
+    padding: 32px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+
+.modal-content h2 {
+    margin: 0 35px 22px 0;
+    color: #003e3e;
+    font-size: 2rem;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    width: auto;
+    margin: 0;
+    padding: 4px 10px;
+    border: 0;
+    color: #6b7280;
+    background: transparent;
+    box-shadow: none;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #111827;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+}
+
+.dashboard-btn {
+    width: 100%;
+}
+
+.input-field,
+.select-dropdown {
+    width: 100%;
+    margin: 8px 0 18px;
+    padding: 11px 12px;
+    border: 1px solid #b9c6c4;
+    border-radius: 8px;
+    color: #273333;
+    background-color: #ffffff;
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.input-field:hover,
+.select-dropdown:hover {
+    border-color: #015c5d;
+    background-color: #f2fbfb;
+}
+
+.input-field:focus,
+.select-dropdown:focus {
+    border-color: #015c5d;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(1, 92, 93, 0.18);
+}
+
+.select-dropdown {
+    cursor: pointer;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 12px 0 20px;
+    gap: 10px;
+}
+
+.checkbox-group label {
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #015c5d;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        min-height: 480px;
+        padding: 32px 16px;
+        background-attachment: scroll;
+    }
+
+    .main-content h2 {
+        margin-bottom: 30px;
+    }
+
+    .role-selection {
+        flex-direction: column;
+        width: min(100%, 280px);
+    }
+
+    .role-selection button {
+        width: 100%;
+    }
+
+    .footer-container,
+    .footer-links {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .header nav {
+        width: 100%;
+    }
+
+    .modal {
+        padding: 24px 12px;
+    }
+
+    .modal-content {
+        padding: 26px 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

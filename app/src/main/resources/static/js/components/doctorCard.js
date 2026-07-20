@@ -1,41 +1,143 @@
-/*
-Import the overlay function for booking appointments from loggedPatient.js
+// doctorCard.js
 
-  Import the deleteDoctor API function to remove doctors (admin role) from docotrServices.js
+import { getPatientData } from "../services/patientServices.js";
 
-  Import function to fetch patient details (used during booking) from patientServices.js
+export function createDoctorCard(doctor) {
+  const card = document.createElement("div");
+  card.classList.add("doctor-card");
+  card.dataset.doctorId = doctor.id;
 
-  Function to create and return a DOM element for a single doctor card
-    Create the main container for the doctor card
-    Retrieve the current user role from localStorage
-    Create a div to hold doctor information
-    Create and set the doctor’s name
-    Create and set the doctor's specialization
-    Create and set the doctor's email
-    Create and list available appointment times
-    Append all info elements to the doctor info container
-    Create a container for card action buttons
-    === ADMIN ROLE ACTIONS ===
-      Create a delete button
-      Add click handler for delete button
-     Get the admin token from localStorage
-        Call API to delete the doctor
-        Show result and remove card if successful
-      Add delete button to actions container
-   
-    === PATIENT (NOT LOGGED-IN) ROLE ACTIONS ===
-      Create a book now button
-      Alert patient to log in before booking
-      Add button to actions container
-  
-    === LOGGED-IN PATIENT ROLE ACTIONS === 
-      Create a book now button
-      Handle booking logic for logged-in patient   
-        Redirect if token not available
-        Fetch patient data with token
-        Show booking overlay UI with doctor and patient info
-      Add button to actions container
-   
-  Append doctor info and action buttons to the car
-  Return the complete doctor card element
-*/
+  const role = localStorage.getItem("userRole");
+
+  const infoDiv = document.createElement("div");
+  infoDiv.classList.add("doctor-info");
+
+  const name = document.createElement("h3");
+  name.textContent = doctor.name || "Unknown doctor";
+
+  const specialization = document.createElement("p");
+  specialization.textContent = `Specialty: ${doctor.specialty || "Not specified"}`;
+
+  const email = document.createElement("p");
+  email.textContent = `Email: ${doctor.email || "Not provided"}`;
+
+  const availability = document.createElement("p");
+  const availableTimes = Array.isArray(doctor.availableTimes)
+    ? doctor.availableTimes.join(", ")
+    : "";
+  availability.textContent = `Availability: ${availableTimes || "No available times"}`;
+
+  infoDiv.appendChild(name);
+  infoDiv.appendChild(specialization);
+  infoDiv.appendChild(email);
+  infoDiv.appendChild(availability);
+
+  const actionsDiv = document.createElement("div");
+  actionsDiv.classList.add("card-actions");
+
+  if (role === "admin") {
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.classList.add("delete-doctor-btn");
+    removeBtn.textContent = "Delete";
+
+    removeBtn.addEventListener("click", async () => {
+      const shouldDelete = window.confirm(
+        `Are you sure you want to delete ${doctor.name || "this doctor"}?`
+      );
+
+      if (!shouldDelete) {
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Session expired or invalid login. Please log in again.");
+        return;
+      }
+
+      removeBtn.disabled = true;
+      removeBtn.textContent = "Deleting...";
+
+      try {
+        const { deleteDoctor } = await import("../services/doctorServices.js");
+
+        if (typeof deleteDoctor !== "function") {
+          throw new Error("The delete doctor service is not available.");
+        }
+
+        const result = await deleteDoctor(doctor.id, token);
+
+        if (result.success) {
+          alert(result.message || "Doctor deleted successfully.");
+          card.remove();
+          return;
+        }
+
+        alert(result.message || "The doctor could not be deleted.");
+      } catch (error) {
+        console.error("Failed to delete doctor:", error);
+        alert("The doctor could not be deleted. Please try again.");
+      } finally {
+        if (card.isConnected) {
+          removeBtn.disabled = false;
+          removeBtn.textContent = "Delete";
+        }
+      }
+    });
+
+    actionsDiv.appendChild(removeBtn);
+  } else if (role === "patient") {
+    const bookNow = document.createElement("button");
+    bookNow.type = "button";
+    bookNow.classList.add("book-now-btn");
+    bookNow.textContent = "Book Now";
+
+    bookNow.addEventListener("click", () => {
+      alert("Patient needs to login first.");
+    });
+
+    actionsDiv.appendChild(bookNow);
+  } else if (role === "loggedPatient") {
+    const bookNow = document.createElement("button");
+    bookNow.type = "button";
+    bookNow.classList.add("book-now-btn");
+    bookNow.textContent = "Book Now";
+
+    bookNow.addEventListener("click", async (event) => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Session expired or invalid login. Please log in again.");
+        localStorage.setItem("userRole", "patient");
+        window.location.href = "/pages/patientDashboard.html";
+        return;
+      }
+
+      bookNow.disabled = true;
+
+      try {
+        const patientData = await getPatientData(token);
+
+        if (!patientData) {
+          throw new Error("Patient information could not be loaded.");
+        }
+
+        const { showBookingOverlay } = await import("../loggedPatient.js");
+        showBookingOverlay(event, doctor, patientData);
+      } catch (error) {
+        console.error("Failed to start appointment booking:", error);
+        alert("The booking form could not be opened. Please try again.");
+      } finally {
+        bookNow.disabled = false;
+      }
+    });
+
+    actionsDiv.appendChild(bookNow);
+  }
+
+  card.appendChild(infoDiv);
+  card.appendChild(actionsDiv);
+
+  return card;
+}
