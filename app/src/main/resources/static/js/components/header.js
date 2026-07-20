@@ -102,9 +102,19 @@ function attachHeaderButtonListeners() {
   const logoutButton = document.getElementById("logoutBtn");
   const logoutPatientButton = document.getElementById("logoutPatientBtn");
 
-  addDoctorButton?.addEventListener("click", () => openHeaderModal("addDoctor"));
-  patientLoginButton?.addEventListener("click", () => openHeaderModal("patientLogin"));
-  patientSignupButton?.addEventListener("click", () => openHeaderModal("patientSignup"));
+  if (addDoctorButton && addDoctorButton.dataset.modalListenerAttached !== "true") {
+    addDoctorButton.dataset.modalListenerAttached = "true";
+    addDoctorButton.addEventListener("click", () => openHeaderModal("addDoctor"));
+  }
+  if (patientLoginButton && patientLoginButton.dataset.modalListenerAttached !== "true") {
+    patientLoginButton.dataset.modalListenerAttached = "true";
+    patientLoginButton.addEventListener("click", () => openHeaderModal("patientLogin"));
+  }
+
+  if (patientSignupButton && patientSignupButton.dataset.modalListenerAttached !== "true") {
+    patientSignupButton.dataset.modalListenerAttached = "true";
+    patientSignupButton.addEventListener("click", () => openHeaderModal("patientSignup"));
+  }
 
   doctorHomeButton?.addEventListener("click", () => {
     const token = localStorage.getItem("token");
