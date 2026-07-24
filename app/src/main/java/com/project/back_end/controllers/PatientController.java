@@ -74,6 +74,19 @@ public class PatientController {
         return patientService.getPatientAppointment(id, token);
     }
 
+    @GetMapping("/{id}/{user}/{token}")
+    public ResponseEntity<?> getPatientAppointmentsByRole(
+            @PathVariable Long id,
+            @PathVariable String user,
+            @PathVariable String token) {
+        ResponseEntity<Map<String, String>> validation = service.validateToken(token, user);
+        if (!validation.getStatusCode().is2xxSuccessful()) {
+            return validation;
+        }
+
+        return patientService.getPatientAppointment(id, token, user);
+    }
+
     @GetMapping("/filter/{condition}/{name}/{token}")
     public ResponseEntity<?> filterPatientAppointments(
             @PathVariable String condition,

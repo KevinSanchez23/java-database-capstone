@@ -2,8 +2,10 @@ package com.project.back_end.services;
 
 import com.project.back_end.DTO.AppointmentDTO;
 import com.project.back_end.models.Appointment;
+import com.project.back_end.models.Doctor;
 import com.project.back_end.models.Patient;
 import com.project.back_end.repo.AppointmentRepository;
+import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +27,17 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final AppointmentRepository appointmentRepository;
+    private final DoctorRepository doctorRepository;
     private final TokenService tokenService;
 
     public PatientService(
             PatientRepository patientRepository,
             AppointmentRepository appointmentRepository,
+            DoctorRepository doctorRepository,
             TokenService tokenService) {
         this.patientRepository = patientRepository;
         this.appointmentRepository = appointmentRepository;
+        this.doctorRepository = doctorRepository;
         this.tokenService = tokenService;
     }
 
@@ -49,22 +54,41 @@ public class PatientService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> getPatientAppointment(Long id, String token) {
+        return getPatientAppointment(id, token, "patient");
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> getPatientAppointment(
+            Long id, String token, String user) {
         if (id == null) {
             return error(HttpStatus.BAD_REQUEST, "Patient ID is required.");
         }
 
         try {
+            String role = user == null ? "" : user.trim().toLowerCase(Locale.ROOT);
             String email = tokenService.extractIdentifier(token);
-            Patient authenticatedPatient = patientRepository.findByEmail(email);
+            List<Appointment> storedAppointments;
 
-            if (authenticatedPatient == null
-                    || !Objects.equals(authenticatedPatient.getId(), id)) {
-                return error(HttpStatus.UNAUTHORIZED,
-                        "You are not authorized to access these appointments.");
+            if ("patient".equals(role) || "loggedpatient".equals(role)) {
+                Patient authenticatedPatient = patientRepository.findByEmail(email);
+                if (authenticatedPatient == null
+                        || !Objects.equals(authenticatedPatient.getId(), id)) {
+                    return error(HttpStatus.FORBIDDEN,
+                            "You are not authorized to access these appointments.");
+                }
+                storedAppointments = appointmentRepository.findByPatientId(id);
+            } else if ("doctor".equals(role)) {
+                Doctor authenticatedDoctor = doctorRepository.findByEmail(email);
+                if (authenticatedDoctor == null) {
+                    return error(HttpStatus.UNAUTHORIZED, "Invalid doctor token.");
+                }
+                storedAppointments = appointmentRepository.findByPatientIdAndDoctorId(
+                        id, authenticatedDoctor.getId());
+            } else {
+                return error(HttpStatus.BAD_REQUEST, "Unsupported user role.");
             }
 
-            List<AppointmentDTO> appointments = toAppointmentDTOs(
-                    appointmentRepository.findByPatientId(id));
+            List<AppointmentDTO> appointments = toAppointmentDTOs(storedAppointments);
             return appointmentsResponse(appointments);
         } catch (Exception exception) {
             LOGGER.error("Unable to retrieve appointments for patient {}", id, exception);

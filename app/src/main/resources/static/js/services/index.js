@@ -77,7 +77,7 @@ window.doctorLoginHandler = async function doctorLoginHandler() {
     return;
   }
 
-  const doctor = { email, password };
+  const doctor = { identifier: email, password };
 
   try {
     const response = await fetch(DOCTOR_API, {

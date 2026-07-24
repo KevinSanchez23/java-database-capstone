@@ -147,7 +147,7 @@ window.loginPatient = async function loginPatient() {
   }
 
   try {
-    const response = await patientLogin({ email, password });
+    const response = await patientLogin({ identifier: email, password });
     const result = await readJsonResponse(response);
 
     if (!response.ok || !result.token) {
